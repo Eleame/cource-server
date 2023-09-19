@@ -1,0 +1,58 @@
+import { Body, Controller, Post } from '@nestjs/common';
+import { Get } from '@nestjs/common';
+import { Param, Query } from '@nestjs/common';
+import { BoilerPartsService } from './boiler-parts.service';
+import { ApiOkResponse, ApiBody } from '@nestjs/swagger';
+import {
+  PaginateAndFilterResponse,
+  FindOneResponse,
+  GetBestsellersResponse,
+  GetNewResponse,
+  SearchResponse,
+  SearchRequest,
+  GetByNameResponse,
+  GetByNameRequest,
+} from './types';
+
+@Controller('boiler-parts')
+export class BoilerPartsController {
+  constructor(private readonly boilerPartsService: BoilerPartsService) {}
+
+  @ApiOkResponse({ type: PaginateAndFilterResponse })
+  @Get()
+  paginateAndFilter(@Query() query) {
+    return this.boilerPartsService.paginateAndFilter(query);
+  }
+
+  @ApiOkResponse({ type: FindOneResponse })
+  @Get('find/:id')
+  getOne(@Param('id') id: string) {
+    return this.boilerPartsService.findOne(id);
+  }
+
+  @ApiOkResponse({ type: GetBestsellersResponse })
+  @Get('bestsellers')
+  getBestseller() {
+    return this.boilerPartsService.bestsellers();
+  }
+
+  @ApiOkResponse({ type: GetNewResponse })
+  @Get('new')
+  getNew() {
+    return this.boilerPartsService.new();
+  }
+
+  @ApiOkResponse({ type: SearchResponse })
+  @ApiBody({ type: SearchRequest })
+  @Post('search')
+  search(@Body() { search }: { search: string }) {
+    return this.boilerPartsService.searchByString(search);
+  }
+
+  @ApiOkResponse({ type: GetByNameResponse })
+  @ApiBody({ type: GetByNameRequest })
+  @Post('name')
+  getByName(@Body() { name }: { name: string }) {
+    return this.boilerPartsService.findOneByName(name);
+  }
+}
